@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+
+}
+
+/* started card css */
+.col .card .card-img-top{
+    height: 350px;
+}
+
+.mainContainer{
+    margin: 20px;
+}
+.nav-item button{
+    border: none;
+    margin: 5px;
+    background-color: inherit;
+}
+.btn-outline-success{
+    float: right;
+}
+/* ended card css */
