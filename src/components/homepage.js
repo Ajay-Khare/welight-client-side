@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react"
 import "./style/homepage.css"
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import Cart from "./cart";
 const Homepage = () => {
+    // data of all products
     const [data, setData] = useState([]);
+
+    // category wise products
     const [catData, setCatData] = useState([]);
+
     useEffect(() => {
-        fetch("https://fakestoreapi.com/products?limit=50", {
+        fetch("https://fakestoreapi.com/products", {
             method: "GET",
             headers: {
                 "content-type": "application/json"
@@ -17,6 +24,27 @@ const Homepage = () => {
             })
 
     }, [])
+
+
+    const [addedToCart, setAddedToCart] = useState([]);
+
+    // products added in cart by user, data loaded from database
+    const [cartList, setCartList] = useState([])
+
+    const cartHandler = (e) => {
+        e.preventDefault()
+        fetch("http://localhost:8080/cart", {
+            method: "get",
+            headers: {
+                "accessToken": sessionStorage.getItem("accessToken")
+            }
+        })
+            .then(data => data.json())
+            .then(res => {
+                setCartList(res);
+
+            })
+    }
 
     const allCat = (e) => {
         let temp = [];
@@ -37,6 +65,7 @@ const Homepage = () => {
         setCatData(temp)
 
     }
+
     const jwellary = (e) => {
         let temp = [];
         data.map(ele => {
@@ -56,6 +85,7 @@ const Homepage = () => {
         })
         setCatData(temp)
     }
+
     const womenClothing = (e) => {
         let temp = [];
         data.map(ele => {
@@ -67,10 +97,42 @@ const Homepage = () => {
         setCatData(temp)
     }
 
-    const addToCart= (e) => {
-        console.log(e.target.id)
-    }
+    // silgle product name on click on add to cart
+    const [cartProduct, setCartProduct] = useState({});
+    const addToCart = (e) => {
+        const id = e.target.id;
+        let product
+        data.map(ele => {
+            if (ele.id == id) {
+                product = ele.title;
+            }
+        })
+        setCartProduct({ product: product });
+        if (cartProduct.product) {
+            fetch("http://localhost:8080/cart", {
+                method: "post",
+                headers: {
+                    "content-type": "application/json",
+                    "accessToken": sessionStorage.getItem("accessToken")
+                },
+                body: JSON.stringify(cartProduct)
+            })
+                .then(data => data.json())
+                .then(res => {
+                    console.log(res.message)
+                    if (res.message === "User Is not Loged In") {
+                        toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
+                    }
+                    if (res.message === "success") {
+                        setAddedToCart([...addedToCart, id])
+                    }
+                    if (res.message === "jwt expired" || res.message === "jwt malformed") {
+                        toast.error("Please Log In to add products in cart", { position: toast.POSITION.TOP_CENTER })
+                    }
+                })
+        }
 
+    }
 
     return (
         <>
@@ -102,7 +164,7 @@ const Homepage = () => {
 
                     </div>
                     <form className="d-flex">
-                        <button className="btn btn-success" type="submit">Cart</button>
+                        <button className="btn btn-success" type="submit" data-toggle="modal" data-target="#myModal" onClick={cartHandler}>Cart</button>
                     </form>
                 </div>
             </nav>
@@ -120,7 +182,11 @@ const Homepage = () => {
                                             <p className="price">price {ele.price} $ </p>
                                             <p className="rating">rating {ele.rating.rate}/5 </p>
                                         </div>
-                                        <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
+
+                                        {(addedToCart.some(element => element == ele.id))
+                                            ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
+                                            : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
+                                        }
                                         <p className="card-text">{ele.description}</p>
                                     </div>
                                 </div>
@@ -130,7 +196,8 @@ const Homepage = () => {
 
                 </div>
             </div>
-
+            <ToastContainer />
+            <Cart data={cartList} />
         </>
     )
 }

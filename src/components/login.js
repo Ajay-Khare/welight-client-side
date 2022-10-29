@@ -39,7 +39,7 @@ const Login = () => {
             }
             if (data.message === "success") {
                 sessionStorage.setItem('accessToken', data.token)
-                navigate('/signup')
+                navigate('/homepage');
             }
         })
     }
