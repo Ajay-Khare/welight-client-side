@@ -4,6 +4,11 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Cart from "./cart";
 const Homepage = () => {
+
+    // to refresh updated cart data aftere changing quantity oa products
+    const [refresh, setRefresh] = useState(true)
+
+
     // data of all products
     const [data, setData] = useState([]);
 
@@ -25,13 +30,11 @@ const Homepage = () => {
 
     }, [])
 
-    // arrey of id's of products which are added in the cart.
 
     // products added in cart by user, data loaded from database
     const [cartList, setCartList] = useState([])
 
-    const cartHandler = (e) => {
-        e.preventDefault()
+    useEffect(() => {
         fetch("http://localhost:8080/cart", {
             method: "get",
             headers: {
@@ -43,6 +46,25 @@ const Homepage = () => {
                 setCartList(res);
 
             })
+    }, [refresh])
+
+
+    const cartHandler = (e) => {
+        e.preventDefault()
+        // useEffect(() => {
+            fetch("http://localhost:8080/cart", {
+                method: "get",
+                headers: {
+                    "accessToken": sessionStorage.getItem("accessToken")
+                }
+            })
+                .then(data => data.json())
+                .then(res => {
+                    setCartList(res);
+
+                })
+        // }, [refresh])
+
     }
 
     const allCat = (e) => {
@@ -105,20 +127,20 @@ const Homepage = () => {
     let id;
     const addToCart = (e) => {
         id = e.target.id;
-        let product
+        let product;
+        let price;
         data.map(ele => {
             if (ele.id == id) {
                 product = ele.title;
+                price = ele.price
             }
         })
-        setCartProduct({ product: product });
-        setProductAddedInCart([...productAddedInCart,product]);
-        console.log(productAddedInCart);
+        setCartProduct({ product, price });
+        setProductAddedInCart([...productAddedInCart, product]);
+        setRefresh(!refresh)
     }
 
     useEffect(() => {
-
-        setProductAddedInCart([...productAddedInCart, cartProduct.product]);
 
         fetch("http://localhost:8080/cart", {
             method: "post",
@@ -130,7 +152,6 @@ const Homepage = () => {
         })
             .then(data => data.json())
             .then(res => {
-                console.log(res.message)
                 if (res.message === "User Is not Loged In") {
                     toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
                 }
@@ -140,12 +161,12 @@ const Homepage = () => {
                 if (res.message === "jwt expired" || res.message === "jwt malformed") {
                     toast.error("Please Log In to add products in cart", { position: toast.POSITION.TOP_CENTER })
                 }
-                if (res.message === "item allready exist in cart"){
+                if (res.message === "item allready exist in cart") {
                     toast.success("item allready exist in cart", { position: toast.POSITION.TOP_CENTER })
 
                 }
             })
-    }, [cartProduct]);
+    }, [cartProduct, refresh]);
 
     return (
         <>
@@ -217,7 +238,7 @@ const Homepage = () => {
                 </div>
             </div>
             <ToastContainer />
-            <Cart data={cartList} />
+            <Cart data={{ cartList, refresh, setRefresh }} />
         </>
     )
 }
