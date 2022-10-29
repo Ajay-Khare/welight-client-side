@@ -29,8 +29,10 @@ const Login = () => {
                 email: data.email,
                 password: data.password
             })
-        }).then(res => res.json()).then(data => {
-            if (data.message.err) console.log(data.mesaage)
+        }).then(res => res.json())
+            .then(data => {
+                // if (data.message.err)
+                    console.log(data)
             if (data.message === "Incorrect Password") {
                 toast.error("Incorrect Password", { position: toast.POSITION.BOTTOM_CENTER })
             }

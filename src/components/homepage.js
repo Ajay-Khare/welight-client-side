@@ -3,17 +3,24 @@ import "./style/homepage.css"
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import Cart from "./cart";
+import PurchaseHistory from "./purchaseHistory";
+import { useNavigate } from "react-router-dom";
 const Homepage = () => {
+    const navigate = useNavigate()
+    // switch between cart and perchase history
+    const [cartToPurchase, setCartToPurchase] = useState(false);
 
     // to refresh updated cart data aftere changing quantity oa products
     const [refresh, setRefresh] = useState(true)
-
 
     // data of all products
     const [data, setData] = useState([]);
 
     // category wise products
     const [catData, setCatData] = useState([]);
+
+    // declearing veriable to apply sorting
+    let tempData
 
     useEffect(() => {
         fetch("https://fakestoreapi.com/products", {
@@ -25,11 +32,11 @@ const Homepage = () => {
             .then(data => data.json())
             .then(res => {
                 setData(res)
+                tempData = res;
                 setCatData(res)
             })
 
     }, [])
-
 
     // products added in cart by user, data loaded from database
     const [cartList, setCartList] = useState([])
@@ -50,21 +57,18 @@ const Homepage = () => {
 
 
     const cartHandler = (e) => {
+        setCartToPurchase(true);
         e.preventDefault()
-        // useEffect(() => {
-            fetch("http://localhost:8080/cart", {
-                method: "get",
-                headers: {
-                    "accessToken": sessionStorage.getItem("accessToken")
-                }
+        fetch("http://localhost:8080/cart", {
+            method: "get",
+            headers: {
+                "accessToken": sessionStorage.getItem("accessToken")
+            }
+        })
+            .then(data => data.json())
+            .then(res => {
+                setCartList(res);
             })
-                .then(data => data.json())
-                .then(res => {
-                    setCartList(res);
-
-                })
-        // }, [refresh])
-
     }
 
     const allCat = (e) => {
@@ -152,13 +156,14 @@ const Homepage = () => {
         })
             .then(data => data.json())
             .then(res => {
+                // console.log(res)
                 if (res.message === "User Is not Loged In") {
                     toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
                 }
                 if (res.message === "success") {
                     toast.success("item added to your cart", { position: toast.POSITION.TOP_CENTER })
                 }
-                if (res.message === "jwt expired" || res.message === "jwt malformed") {
+                if (res === "jwt expired" || res.message === "jwt malformed") {
                     toast.error("Please Log In to add products in cart", { position: toast.POSITION.TOP_CENTER })
                 }
                 if (res.message === "item allready exist in cart") {
@@ -167,6 +172,38 @@ const Homepage = () => {
                 }
             })
     }, [cartProduct, refresh]);
+
+    // purchase History
+    const [history, setHistory] = useState([])
+    useEffect(() => {
+        fetch("http://localhost:8080/purchaseHistory", {
+            method: "GET",
+            headers: {
+                "accessToken": sessionStorage.getItem("accessToken")
+            }
+        })
+            .then(data => data.json())
+            .then(res => {
+                if (res.message == "data available") {
+                    setHistory(res.data)
+                }
+
+            })
+    }, [refresh])
+    const purchaseHandler = (e) => {
+        e.preventDefault()
+        setRefresh(!refresh);
+        setCartToPurchase(false);
+    }
+
+    const selectHandler = (e) => {
+        if (e.target.value === "accending") {
+            // tempData.sort((a, b) => { -(b.price) + (a.price) })
+            console.log(tempData)
+            // setData()
+            // console.log(newData)
+        }
+    }
 
     return (
         <>
@@ -194,51 +231,58 @@ const Homepage = () => {
                             <li className="nav-item">
                                 <button className="nav-link" onClick={womenClothing} tabIndex="-1" aria-disabled="true">women's clothing</button>
                             </li>
+                            <select className="nav-item bg-primary" onChange={selectHandler}>
+                                <option value="random">random</option>
+                                <option value="accending">price Low to High</option>
+                                <option value="decending"> price high to low</option>
+                            </select>
                         </ul>
-
                     </div>
-                    <form className="d-flex">
-                        <button className="btn btn-success" type="submit" data-toggle="modal" data-target="#myModal" onClick={cartHandler}>Cart</button>
+                    <form className="d-flex d-grid gap-2">
+                        {(sessionStorage.getItem("accessToken"))
+                            &&
+                            <>
+                                <button className="btn btn-success" type="submit" data-toggle="modal" data-target="#myModal" onClick={purchaseHandler}>Purchase History</button>
+                                <button className="btn btn-success" type="submit" data-toggle="modal" data-target="#myModal" onClick={cartHandler}>Cart</button>
+                                <button className="btn btn-success" type="submit" data-toggle="modal" onClick={(e) => { e.preventDefault(); sessionStorage.removeItem("accessToken"); navigate("/") }}>Logout</button>
+                            </>
+                        }
                     </form>
                 </div>
             </nav>
             <div className="mainContainer">
 
                 <div className="row row-cols-1 row-cols-md-4 g-4">
-                    {catData.map((ele, i) => {
-                        return (
-                            <div className="col" id={ele.id}>
-                                <div className="card h-100">
-                                    <img src={ele.image} className="card-img-top" alt="..." />
-                                    <div className="card-body">
-                                        <h5 className="card-title">{ele.title} </h5>
-                                        <div>
-                                            <p className="price">price {ele.price} $ </p>
-                                            <p className="rating">rating {ele.rating.rate}/5 </p>
-                                        </div>
 
-                                        {(productAddedInCart.some(element => element == ele.title))
-                                            ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
-                                            : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
-                                        }
+                    {
+                        catData.map((ele, i) => {
+                            return (
+                                <div className="col" id={ele.id}>
+                                    <div className="card h-100">
+                                        <img src={ele.image} className="card-img-top" alt="..." />
+                                        <div className="card-body">
+                                            <h5 className="card-title">{ele.title} </h5>
+                                            <div>
+                                                <p className="price">price {ele.price} $ </p>
+                                                <p className="rating">rating {ele.rating.rate}/5 </p>
+                                            </div>
 
-                                        {/* {
-                                            (cartProduct.product == ele.title)
+                                            {(productAddedInCart.some(element => element == ele.title))
                                                 ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
                                                 : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
-                                        } */}
-
-                                        <p className="card-text">{ele.description}</p>
+                                            }
+                                            <p className="card-text">{ele.description}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )
-                    })}
+                            )
+                        })
+                    }
 
                 </div>
             </div>
             <ToastContainer />
-            <Cart data={{ cartList, refresh, setRefresh }} />
+            {cartToPurchase ? <Cart data={{ cartList, refresh, setRefresh, cartToPurchase }} /> : <PurchaseHistory history={history} />}
         </>
     )
 }
