@@ -231,11 +231,11 @@ const Homepage = () => {
                             <li className="nav-item">
                                 <button className="nav-link" onClick={womenClothing} tabIndex="-1" aria-disabled="true">women's clothing</button>
                             </li>
-                            <select className="nav-item bg-primary" onChange={selectHandler}>
+                            {/* <select className="nav-item bg-primary" onChange={selectHandler}>
                                 <option value="random">random</option>
                                 <option value="accending">price Low to High</option>
                                 <option value="decending"> price high to low</option>
-                            </select>
+                            </select> */}
                         </ul>
                     </div>
                     <form className="d-flex d-grid gap-2">
