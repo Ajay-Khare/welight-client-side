@@ -25,8 +25,7 @@ const Homepage = () => {
 
     }, [])
 
-
-    const [addedToCart, setAddedToCart] = useState([]);
+    // arrey of id's of products which are added in the cart.
 
     // products added in cart by user, data loaded from database
     const [cartList, setCartList] = useState([])
@@ -99,8 +98,13 @@ const Homepage = () => {
 
     // silgle product name on click on add to cart
     const [cartProduct, setCartProduct] = useState({});
+
+    // to updata button name from "add to cart" to "added to cart"
+    const [productAddedInCart, setProductAddedInCart] = useState([]);
+
+    let id;
     const addToCart = (e) => {
-        const id = e.target.id;
+        id = e.target.id;
         let product
         data.map(ele => {
             if (ele.id == id) {
@@ -108,31 +112,40 @@ const Homepage = () => {
             }
         })
         setCartProduct({ product: product });
-        if (cartProduct.product) {
-            fetch("http://localhost:8080/cart", {
-                method: "post",
-                headers: {
-                    "content-type": "application/json",
-                    "accessToken": sessionStorage.getItem("accessToken")
-                },
-                body: JSON.stringify(cartProduct)
-            })
-                .then(data => data.json())
-                .then(res => {
-                    console.log(res.message)
-                    if (res.message === "User Is not Loged In") {
-                        toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
-                    }
-                    if (res.message === "success") {
-                        setAddedToCart([...addedToCart, id])
-                    }
-                    if (res.message === "jwt expired" || res.message === "jwt malformed") {
-                        toast.error("Please Log In to add products in cart", { position: toast.POSITION.TOP_CENTER })
-                    }
-                })
-        }
-
+        setProductAddedInCart([...productAddedInCart,product]);
+        console.log(productAddedInCart);
     }
+
+    useEffect(() => {
+
+        setProductAddedInCart([...productAddedInCart, cartProduct.product]);
+
+        fetch("http://localhost:8080/cart", {
+            method: "post",
+            headers: {
+                "content-type": "application/json",
+                "accessToken": sessionStorage.getItem("accessToken")
+            },
+            body: JSON.stringify(cartProduct)
+        })
+            .then(data => data.json())
+            .then(res => {
+                console.log(res.message)
+                if (res.message === "User Is not Loged In") {
+                    toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
+                }
+                if (res.message === "success") {
+                    toast.success("item added to your cart", { position: toast.POSITION.TOP_CENTER })
+                }
+                if (res.message === "jwt expired" || res.message === "jwt malformed") {
+                    toast.error("Please Log In to add products in cart", { position: toast.POSITION.TOP_CENTER })
+                }
+                if (res.message === "item allready exist in cart"){
+                    toast.success("item allready exist in cart", { position: toast.POSITION.TOP_CENTER })
+
+                }
+            })
+    }, [cartProduct]);
 
     return (
         <>
@@ -183,10 +196,17 @@ const Homepage = () => {
                                             <p className="rating">rating {ele.rating.rate}/5 </p>
                                         </div>
 
-                                        {(addedToCart.some(element => element == ele.id))
+                                        {(productAddedInCart.some(element => element == ele.title))
                                             ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
                                             : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
                                         }
+
+                                        {/* {
+                                            (cartProduct.product == ele.title)
+                                                ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
+                                                : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
+                                        } */}
+
                                         <p className="card-text">{ele.description}</p>
                                     </div>
                                 </div>

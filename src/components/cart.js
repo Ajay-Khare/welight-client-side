@@ -5,8 +5,6 @@ const Cart = (prop) => {
         <>
 
             <div className="container">
-                {/* <button type="button" className="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button> */}
-
                 {/* <!-- Modal --> */}
                 <div className="modal fade " id="myModal" role="dialog">
                     <div className="modal-dialog modal-xxl">
@@ -14,7 +12,7 @@ const Cart = (prop) => {
                         {/* <!-- Modal content--> */}
                         <div className="modal-content">
                             <div className="modal-header">
-                                <button type="button" className="close" data-dismiss="modal">&times;</button>
+                                <button type="button" className="close float-right" data-dismiss="modal">&times;</button>
                                 <h4 className="modal-title">Your Cart</h4>
                             </div>
                             <div className="modal-body">
