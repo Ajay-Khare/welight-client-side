@@ -36,6 +36,7 @@ const Cart = (prop) => {
 
     // onClick purchase putton
     const purchaseHandler = () => {
+        prop.data.setCartProduct([])
         fetch("https://e-shopping-by-ajay.herokuapp.com/purchase", {
             method: "PATCH",
             headers: {

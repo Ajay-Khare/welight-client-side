@@ -20,6 +20,9 @@ const Homepage = () => {
     const [catData, setCatData] = useState([]);
 
     // declearing veriable to apply sorting
+    let tempData
+
+    // loading products from fake api 
     useEffect(() => {
         fetch("https://fakestoreapi.com/products", {
             method: "GET",
@@ -30,6 +33,7 @@ const Homepage = () => {
             .then(data => data.json())
             .then(res => {
                 setData(res)
+                tempData = res;
                 setCatData(res)
             })
 
@@ -37,6 +41,7 @@ const Homepage = () => {
 
     // products added in cart by user, data loaded from database
     const [cartList, setCartList] = useState([])
+
     useEffect(() => {
         fetch("https://e-shopping-by-ajay.herokuapp.com/cart", {
             method: "get",
@@ -47,10 +52,11 @@ const Homepage = () => {
             .then(data => data.json())
             .then(res => {
                 setCartList(res);
+
             })
     }, [refresh])
 
-    // oncLick cart button
+
     const cartHandler = (e) => {
         setCartToPurchase(true);
         e.preventDefault()
@@ -66,59 +72,58 @@ const Homepage = () => {
             })
     }
 
-
-    // sorting products according to categary
     const allCat = (e) => {
         let temp = [];
         data.map(ele => {
-            return temp.push(ele)
+            temp.push(ele)
         })
         setCatData(temp)
 
     }
+
     const menClothing = (e) => {
         let temp = [];
         data.map(ele => {
             if (ele.category === "men's clothing") {
                 temp.push(ele)
             }
-            return
         })
         setCatData(temp)
 
     }
+
     const jwellary = (e) => {
         let temp = [];
         data.map(ele => {
             if (ele.category === "jewelery") {
                 temp.push(ele)
             }
-            return
         })
         setCatData(temp)
     }
+
     const electronic = (e) => {
         let temp = [];
         data.map(ele => {
             if (ele.category === "electronics") {
                 temp.push(ele)
             }
-            return
         })
         setCatData(temp)
     }
+
     const womenClothing = (e) => {
         let temp = [];
         data.map(ele => {
             if (ele.category === "women's clothing") {
                 temp.push(ele)
+                return
             }
-            return
         })
         setCatData(temp)
     }
 
-    // single product name on click on add to cart
+    // silgle product name on click on add to cart
     const [cartProduct, setCartProduct] = useState({});
 
     // to updata button name from "add to cart" to "added to cart"
@@ -130,7 +135,7 @@ const Homepage = () => {
         let product;
         let price;
         data.map(ele => {
-            if (ele.id === id) {
+            if (ele.id == id) {
                 product = ele.title;
                 price = ele.price
             }
@@ -152,6 +157,7 @@ const Homepage = () => {
         })
             .then(data => data.json())
             .then(res => {
+                // console.log(res)
                 if (res.message === "User Is not Loged In") {
                     toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
                 }
@@ -179,7 +185,7 @@ const Homepage = () => {
         })
             .then(data => data.json())
             .then(res => {
-                if (res.message === "data available") {
+                if (res.message == "data available") {
                     setHistory(res.data)
                 }
 
@@ -195,7 +201,7 @@ const Homepage = () => {
         <>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
                 <div className="container-fluid">
-                    <span className="navbar-brand" >E Shopping</span>
+                    <a className="navbar-brand" >E Shopping</a>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -248,7 +254,7 @@ const Homepage = () => {
                                                 <p className="rating">rating {ele.rating.rate}/5 </p>
                                             </div>
 
-                                            {(productAddedInCart.some(element => element === ele.title))
+                                            {(productAddedInCart.some(element => element == ele.title))
                                                 ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
                                                 : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
                                             }
@@ -263,7 +269,7 @@ const Homepage = () => {
                 </div>
             </div>
             <ToastContainer />
-            {cartToPurchase ? <Cart data={{ cartList, setCartList, refresh, setRefresh, cartToPurchase, }} /> : <PurchaseHistory history={history} />}
+            {cartToPurchase ? <Cart data={{ cartList, refresh, setRefresh, cartToPurchase, cartProduct, setCartProduct }} /> : <PurchaseHistory history={history} />}
         </>
     )
 }
