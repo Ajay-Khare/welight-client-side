@@ -18,9 +18,7 @@ const Login = () => {
 
     const submitData = (e) => {
         e.preventDefault()
-        // console.log(data)
-
-        fetch("http://localhost:8080/login", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/login", {
             method: "post",
             headers: {
                 "Content-Type": "application/json"
@@ -31,19 +29,17 @@ const Login = () => {
             })
         }).then(res => res.json())
             .then(data => {
-                // if (data.message.err)
-                    console.log(data)
-            if (data.message === "Incorrect Password") {
-                toast.error("Incorrect Password", { position: toast.POSITION.BOTTOM_CENTER })
-            }
-            if (data.message === "USER NOT REGISTERED") {
-                toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
-            }
-            if (data.message === "success") {
-                sessionStorage.setItem('accessToken', data.token)
-                navigate('/homepage');
-            }
-        })
+                if (data.message === "Incorrect Password") {
+                    toast.error("Incorrect Password", { position: toast.POSITION.BOTTOM_CENTER })
+                }
+                if (data.message === "USER NOT REGISTERED") {
+                    toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
+                }
+                if (data.message === "success") {
+                    sessionStorage.setItem('accessToken', data.token)
+                    navigate('/homepage');
+                }
+            })
     }
 
 
@@ -56,7 +52,6 @@ const Login = () => {
                         <img src={dots} alt="" />
                     </div>
                     <div className="middleContainer">
-
                         <h1 className="logo">Enter your Login Details</h1>
                         <p className="para">Enter your credentials to access your account</p>
                         <form className="loginForm" onSubmit={(e) => submitData(e)}>

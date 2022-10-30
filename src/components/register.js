@@ -33,7 +33,7 @@ const RegisterPage = () => {
             if (length) {
                 return
             }
-            fetch('http://localhost:8080/register', {
+            fetch('https://e-shopping-by-ajay.herokuapp.com/register', {
                 method: "post",
                 headers: {
                     "Content-Type": "application/json",

@@ -21,7 +21,6 @@ const Homepage = () => {
 
     // declearing veriable to apply sorting
     let tempData
-
     useEffect(() => {
         fetch("https://fakestoreapi.com/products", {
             method: "GET",
@@ -40,9 +39,8 @@ const Homepage = () => {
 
     // products added in cart by user, data loaded from database
     const [cartList, setCartList] = useState([])
-
     useEffect(() => {
-        fetch("http://localhost:8080/cart", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/cart", {
             method: "get",
             headers: {
                 "accessToken": sessionStorage.getItem("accessToken")
@@ -51,15 +49,14 @@ const Homepage = () => {
             .then(data => data.json())
             .then(res => {
                 setCartList(res);
-
             })
     }, [refresh])
 
-
+    // oncLick cart button
     const cartHandler = (e) => {
         setCartToPurchase(true);
         e.preventDefault()
-        fetch("http://localhost:8080/cart", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/cart", {
             method: "get",
             headers: {
                 "accessToken": sessionStorage.getItem("accessToken")
@@ -71,6 +68,8 @@ const Homepage = () => {
             })
     }
 
+
+    // sorting products according to categary
     const allCat = (e) => {
         let temp = [];
         data.map(ele => {
@@ -79,7 +78,6 @@ const Homepage = () => {
         setCatData(temp)
 
     }
-
     const menClothing = (e) => {
         let temp = [];
         data.map(ele => {
@@ -90,7 +88,6 @@ const Homepage = () => {
         setCatData(temp)
 
     }
-
     const jwellary = (e) => {
         let temp = [];
         data.map(ele => {
@@ -100,7 +97,6 @@ const Homepage = () => {
         })
         setCatData(temp)
     }
-
     const electronic = (e) => {
         let temp = [];
         data.map(ele => {
@@ -110,7 +106,6 @@ const Homepage = () => {
         })
         setCatData(temp)
     }
-
     const womenClothing = (e) => {
         let temp = [];
         data.map(ele => {
@@ -122,7 +117,7 @@ const Homepage = () => {
         setCatData(temp)
     }
 
-    // silgle product name on click on add to cart
+    // single product name on click on add to cart
     const [cartProduct, setCartProduct] = useState({});
 
     // to updata button name from "add to cart" to "added to cart"
@@ -156,7 +151,6 @@ const Homepage = () => {
         })
             .then(data => data.json())
             .then(res => {
-                // console.log(res)
                 if (res.message === "User Is not Loged In") {
                     toast.error("User not Registered", { position: toast.POSITION.TOP_CENTER })
                 }
@@ -196,15 +190,6 @@ const Homepage = () => {
         setCartToPurchase(false);
     }
 
-    const selectHandler = (e) => {
-        if (e.target.value === "accending") {
-            // tempData.sort((a, b) => { -(b.price) + (a.price) })
-            console.log(tempData)
-            // setData()
-            // console.log(newData)
-        }
-    }
-
     return (
         <>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
@@ -231,11 +216,6 @@ const Homepage = () => {
                             <li className="nav-item">
                                 <button className="nav-link" onClick={womenClothing} tabIndex="-1" aria-disabled="true">women's clothing</button>
                             </li>
-                            {/* <select className="nav-item bg-primary" onChange={selectHandler}>
-                                <option value="random">random</option>
-                                <option value="accending">price Low to High</option>
-                                <option value="decending"> price high to low</option>
-                            </select> */}
                         </ul>
                     </div>
                     <form className="d-flex d-grid gap-2">
@@ -282,7 +262,7 @@ const Homepage = () => {
                 </div>
             </div>
             <ToastContainer />
-            {cartToPurchase ? <Cart data={{ cartList, refresh, setRefresh, cartToPurchase }} /> : <PurchaseHistory history={history} />}
+            {cartToPurchase ? <Cart data={{ cartList, setCartList, refresh, setRefresh, cartToPurchase,  }} /> : <PurchaseHistory history={history} />}
         </>
     )
 }

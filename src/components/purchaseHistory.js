@@ -21,15 +21,13 @@ const PurchaseHistory = (prop) => {
                                         : prop.history.map((ele,i) => {
                                             return (
                                                 <>
-                                                    <p>{ i+1}. {ele.product}</p>
-                                                    <p><span>Quantity : {ele.quantity}</span> , <span>price : { ele.price } $</span></p>
-                                                    
+                                                    <p style={{fontWeight:600}}>{ i+1}. {ele.product}</p>
+                                                    <p><span>Quantity : {ele.quantity}</span> , <span>price : {ele.price} $</span></p>
+                                                    <hr />
                                                 </>
                                             )
                                         })
-
                                 }
-                                {/* <p>Grand Total : {amount.toFixed(2)} $</p> */}
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>

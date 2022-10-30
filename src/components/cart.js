@@ -3,9 +3,8 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
 const Cart = (prop) => {
-// const [reload, setReload]=useState(true)
-    
-    
+
+    // to calculate total amonun of product whih are added in cart
     let amount = 0;
     prop.data.cartList.map(ele => {
         amount += ele.price * ele.quantity
@@ -22,7 +21,7 @@ const Cart = (prop) => {
             qty = false
         }
 
-        fetch("http://localhost:8080/quantity", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/quantity", {
             method: "PATCH",
             headers: {
                 "content-type": "application/json",
@@ -35,8 +34,9 @@ const Cart = (prop) => {
             })
     }
 
+    // onClick purchase putton
     const purchaseHandler = () => {
-        fetch("http://localhost:8080/purchase", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/purchase", {
             method: "PATCH",
             headers: {
                 "accessToken": sessionStorage.getItem("accessToken")
@@ -65,29 +65,33 @@ const Cart = (prop) => {
                             </div>
                             <div className="modal-body">
                                 {
-                                    // if(prop.cartToPurchase)?
                                     (prop.data.cartList.length === 0)
                                         ? <p>No Items in Your Cart</p>
                                         : prop.data.cartList.map(ele => {
                                             return (
                                                 <>
-                                                    <p>{ele.product}</p>
+                                                    <p style={{ fontWeight: 600 }}>{ele.product}</p>
                                                     <span>Quantity :
-                                                        <button className="btn btn-sm btn-light btn-padding-y-0" type="button" id={ele._id} onClick={quantityHandler}>-</button>
+                                                        <button
+                                                            className="btn btn-sm btn-light btn-padding-y-0"
+                                                            type="button" id={ele._id}
+                                                            onClick={quantityHandler}>
+                                                            -
+                                                        </button>
                                                         <span>{ele.quantity} </span>
                                                         <button className="btn btn-default btn-sm" type="button" id={ele._id} onClick={quantityHandler}>+</button>
                                                         <br />
                                                         <span>Price per Unit : {ele.price} $</span>
                                                         <br />
-                                                        <span>Sub Totle : {ele.price * ele.quantity} $</span>
+                                                        <span style={{ fontWeight: 600 }}>Sub Totle : {ele.price * ele.quantity} $</span>
                                                         <hr />
                                                     </span>
                                                 </>
                                             )
                                         })
-                                
+
                                 }
-                                <p>Grand Total : {amount.toFixed(2)} $</p>
+                                <p style={{ fontWeight: 600 }}>Grand Total : {amount.toFixed(2)} $</p>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
