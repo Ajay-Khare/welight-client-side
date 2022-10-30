@@ -168,7 +168,6 @@ const Homepage = () => {
                     toast.error("Please Log In to add products in cart", { position: toast.POSITION.TOP_CENTER })
                 }
                 if (res.message === "item allready exist in cart") {
-                    toast.success("item allready exist in cart", { position: toast.POSITION.TOP_CENTER })
 
                 }
             })
