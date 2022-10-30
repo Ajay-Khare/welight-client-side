@@ -20,7 +20,6 @@ const Homepage = () => {
     const [catData, setCatData] = useState([]);
 
     // declearing veriable to apply sorting
-    let tempData
     useEffect(() => {
         fetch("https://fakestoreapi.com/products", {
             method: "GET",
@@ -31,7 +30,6 @@ const Homepage = () => {
             .then(data => data.json())
             .then(res => {
                 setData(res)
-                tempData = res;
                 setCatData(res)
             })
 
@@ -73,7 +71,7 @@ const Homepage = () => {
     const allCat = (e) => {
         let temp = [];
         data.map(ele => {
-            temp.push(ele)
+            return temp.push(ele)
         })
         setCatData(temp)
 
@@ -84,6 +82,7 @@ const Homepage = () => {
             if (ele.category === "men's clothing") {
                 temp.push(ele)
             }
+            return
         })
         setCatData(temp)
 
@@ -94,6 +93,7 @@ const Homepage = () => {
             if (ele.category === "jewelery") {
                 temp.push(ele)
             }
+            return
         })
         setCatData(temp)
     }
@@ -103,6 +103,7 @@ const Homepage = () => {
             if (ele.category === "electronics") {
                 temp.push(ele)
             }
+            return
         })
         setCatData(temp)
     }
@@ -111,8 +112,8 @@ const Homepage = () => {
         data.map(ele => {
             if (ele.category === "women's clothing") {
                 temp.push(ele)
-                return
             }
+            return
         })
         setCatData(temp)
     }
@@ -129,7 +130,7 @@ const Homepage = () => {
         let product;
         let price;
         data.map(ele => {
-            if (ele.id == id) {
+            if (ele.id === id) {
                 product = ele.title;
                 price = ele.price
             }
@@ -141,7 +142,7 @@ const Homepage = () => {
 
     useEffect(() => {
 
-        fetch("http://localhost:8080/cart", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/cart", {
             method: "post",
             headers: {
                 "content-type": "application/json",
@@ -170,7 +171,7 @@ const Homepage = () => {
     // purchase History
     const [history, setHistory] = useState([])
     useEffect(() => {
-        fetch("http://localhost:8080/purchaseHistory", {
+        fetch("https://e-shopping-by-ajay.herokuapp.com/purchaseHistory", {
             method: "GET",
             headers: {
                 "accessToken": sessionStorage.getItem("accessToken")
@@ -178,7 +179,7 @@ const Homepage = () => {
         })
             .then(data => data.json())
             .then(res => {
-                if (res.message == "data available") {
+                if (res.message === "data available") {
                     setHistory(res.data)
                 }
 
@@ -194,7 +195,7 @@ const Homepage = () => {
         <>
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
                 <div className="container-fluid">
-                    <a className="navbar-brand" >E Shopping</a>
+                    <span className="navbar-brand" >E Shopping</span>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -247,7 +248,7 @@ const Homepage = () => {
                                                 <p className="rating">rating {ele.rating.rate}/5 </p>
                                             </div>
 
-                                            {(productAddedInCart.some(element => element == ele.title))
+                                            {(productAddedInCart.some(element => element === ele.title))
                                                 ? <button className="btn btn-primary disabled" id={ele.id}>Added to cart</button>
                                                 : <button className="btn btn-primary" id={ele.id} onClick={addToCart}>Add to cart</button>
                                             }
@@ -262,7 +263,7 @@ const Homepage = () => {
                 </div>
             </div>
             <ToastContainer />
-            {cartToPurchase ? <Cart data={{ cartList, setCartList, refresh, setRefresh, cartToPurchase,  }} /> : <PurchaseHistory history={history} />}
+            {cartToPurchase ? <Cart data={{ cartList, setCartList, refresh, setRefresh, cartToPurchase, }} /> : <PurchaseHistory history={history} />}
         </>
     )
 }

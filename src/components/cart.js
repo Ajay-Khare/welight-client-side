@@ -1,13 +1,13 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css';
 
 const Cart = (prop) => {
 
     // to calculate total amonun of product whih are added in cart
     let amount = 0;
     prop.data.cartList.map(ele => {
-        amount += ele.price * ele.quantity
+        return amount += ele.price * ele.quantity
     })
 
     const quantityHandler = (e) => {
@@ -103,6 +103,7 @@ const Cart = (prop) => {
                 </div>
 
             </div>
+            <ToastContainer/>
 
         </>
     )
